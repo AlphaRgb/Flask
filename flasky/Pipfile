@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.doubanio.com/simple"
+verify_ssl = false
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-bootstrap = "*"
+flask-mail = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+flask-script = "*"
+pymysql = "*"
+mysql-connector-python = "*"
+requests = "*"
+lxml = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.5"
