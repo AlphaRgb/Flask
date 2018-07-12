@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Proxy</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>模型训练...</h1>
+    <!-- <img src="{{ url_for('static', filename='captcha.jpg') }}" alt=""> -->
+    <img src="data:image/jpg;base64,{{ base64_data }}"/>
+    <button onclick="changetext(this)">换一张</button>
+    <button>预测一下结果</button>
+    <script>
+        function changetext(id)
+        {
+            axios.get('/cnn/random/').then(function(res){console.log(res.data)})
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

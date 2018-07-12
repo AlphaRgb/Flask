@@ -25,4 +25,16 @@ def create_app(config_name):
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from .proxy import proxy as proxy_blueprint
+    app.register_blueprint(proxy_blueprint)
+
+    from .novel import novel as novel_blueprint
+    app.register_blueprint(novel_blueprint)
+
+    from .cnn import cnn as cnn_blueprint
+    app.register_blueprint(cnn_blueprint)
+
+    from .resume import resume as resume_blueprint
+    app.register_blueprint(resume_blueprint)
+
     return app

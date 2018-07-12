@@ -6,7 +6,7 @@ import re
 import requests
 from lxml import etree
 
-from chinese_digit import getResultForDigit
+from .chinese_digit import getResultForDigit
 
 
 def get_novel(name):
@@ -28,7 +28,8 @@ def get_novel_info(novel_url):
 def get_novel_chapters(url):
     res = requests.get(url, verify=False)
     html = etree.HTML(res.text)
-    results = html.xpath('//div[@id="list"]/dl/dd/a[contains(text(), "章")]')[:10]
+    # results = html.xpath('//div[@id="list"]/dl/dd/a[contains(text(), "章")]')[:10]
+    results = html.xpath('//div[@id="list"]/dl/dd/a')[:10]
     for result in results:
         chapter = result.xpath('./text()')[0]
         chapter_url = url + result.xpath('./@href')[0]
@@ -48,7 +49,12 @@ if __name__ == '__main__':
     chapters = get_novel_chapters(novel_url)
     for _ in chapters:
         title, chapter_url = _
-        chapter = int(title.split()[0][1:-1]) if re.findall(r'\d{1,}', title.split()[0][1:-1]) else getResultForDigit(title.split()[0][1:-1])
-        print(chapter, title, chapter_url)
-        content = get_chapter_content(chapter_url)
-        print(content)
+        try:
+            chapter = re.findall(r'\d{1,}', title)[0] if re.findall(r'\d{1,}', title) else getResultForDigit(title.split()[0].replace('第', '').replace('章', ''))
+        except Exception as e:
+            print(e)
+        else:
+        # chapter = int(title.split()[0][1:-1]) if re.findall(r'\d{1,}', title.split()[0][1:-1]) else getResultForDigit(title.split()[0][1:-1])
+            print(chapter, title, chapter_url)
+            content = get_chapter_content(chapter_url)
+            print(content)
