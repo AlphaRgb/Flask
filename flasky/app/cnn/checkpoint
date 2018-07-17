@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/alpha/github/Flask/flasky/app/cnn/crack_capcha.model-194200"
+all_model_checkpoint_paths: "/opt/wangfeng/Other/tensorflow_cnn/crack_capcha.model-194200"

@@ -5,12 +5,12 @@ from . import novel
 from .. import db
 from ..models import Novel, Chapter
 from .getter import get_novel, get_novel_info, get_novel_chapters, get_chapter_content
-from flask import jsonify
+from flask import jsonify, render_template
 from .chinese_digit import getResultForDigit
 
 
-@novel.route('/novel/<name>/')
-def novel(name):
+@novel.route('/novels/<name>/')
+def novel_index(name):
     novel_url = get_novel(name)
     name, author = get_novel_info(novel_url)
     novel = Novel.query.filter_by(name=name).first()
@@ -40,8 +40,15 @@ def novel(name):
                 new_chapter = Chapter(title=title, chapter=chapter, content=content, novel_id=novel.id)
                 logging.info('chapter:', new_chapter)
                 db.session.add(new_chapter)
-    results = {
+    novel = {
         'title': name,
         'chapters': all_chapters
     }
-    return jsonify(results)
+    # return jsonify(results)
+    return render_template('novel.html', novel=novel)
+
+@novel.route('/novels/')
+def novels():
+    novels = Novel.query.all()
+    return render_template('novels.html', novels=novels)
+    pass

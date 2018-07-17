@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Novels</title>
+</head>
+<body>
+    <ul>已有小说:
+      {% for novel in novels %}
+        <li>
+            <a href="{{ novel.name }}">{{ novel.name }}</a>
+            <p>作者: {{ novel.author }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+</body>
+</html>

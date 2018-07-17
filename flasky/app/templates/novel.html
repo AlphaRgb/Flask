@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ novel.title }}</title>
+</head>
+<body>
+    <ul>
+        最新章节:
+        {% for title, url in novel.chapters %}
+        <li>
+            <a href="{{ url }}">{{ title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

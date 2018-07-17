@@ -63,4 +63,7 @@ if __name__ == '__main__':
     parser.add_argument("--output_node_names", type=str, default="", help="The name of the output nodes, comma separated.")
     args = parser.parse_args()
 
-    freeze_graph(args.model_dir, args.output_node_names)
+    # freeze_graph(args.model_dir, args.output_node_names)
+    freeze_graph('/Users/alpha/github/flask/flasky/app/cnn/model/', 'inputs_placeholder,predictions,keep_prob')
+    # for n in tf.get_default_graph().as_graph_def().node:
+    #     print(n.name)

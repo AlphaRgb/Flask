@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <title>Proxy</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
 </head>
 <body>
     <h1>模型训练...</h1>
     <!-- <img src="{{ url_for('static', filename='captcha.jpg') }}" alt=""> -->
     <img src="data:image/jpg;base64,{{ base64_data }}"/>
-    <button onclick="changetext(this)">换一张</button>
-    <button>预测一下结果</button>
+    <button id="changeImage">换一张</button>
+    <button id="predictValue">预测一下结果</button>
+    预测结果是:<input type="text" id="result">
     <script>
-        function changetext(id)
-        {
+        $(document).ready(function(){
+          $('#changeImage').click(function(){
             axios.get('/cnn/random/').then(function(res){console.log(res.data)})
             window.location.reload();
-        }
+          })
+          $('#predictValue').click(function(){
+            axios.get('/cnn/predict/').then(function(res){console.log(res.data); $('#result').val(res.data)})})
+        });
     </script>
 </body>
 </html>
