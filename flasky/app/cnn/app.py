@@ -97,8 +97,17 @@ def predict_test():
     # predict = tf.argmax(tf.reshape(y, [-1, 4, 57]), 2)
     # text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
 
-    predict = crack_captcha(persistent_sess, x, image)
-    print(predict)
+    out_put = graph.get_tensor_by_name("prefix/out_put:0")
+    predict = tf.argmax(tf.reshape(out_put, [-1, 4, 63]), 2)
+    text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
+    text = text_list[0].tolist()
+    vector = np.zeros(4 * 63)
+    i = 0
+    for n in text:
+        vector[i * 63 + n] = 1
+        i += 1
+    print(vec2text(vector))
+    return vec2text(vector)
 
 
 
@@ -107,34 +116,24 @@ def predict_test():
 ##################################################
 
 if __name__ == "__main__":
+    from load import load_graph
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--frozen_model_filename", default="results/frozen_model.pb", type=str,
                         help="Frozen model file to import")
     parser.add_argument("--gpu_memory", default=.2, type=float, help="GPU memory per process")
     args = parser.parse_args()
-
-    ##################################################
-    # Tensorflow part
-    ##################################################
-    print('Loading the model')
-    # graph = load_graph(args.frozen_model_filename)
-    # x = graph.get_tensor_by_name('prefix/Placeholder/inputs_placeholder:0')
-    # y = graph.get_tensor_by_name('prefix/Accuracy/predictions:0')
-
     graph = load_graph('/Users/alpha/github/flask/flasky/app/cnn/model/frozen_model.pb')
-    x = graph.get_tensor_by_name('prefix/inputs_placeholder:0')
-    y = graph.get_tensor_by_name('prefix/predictions:0')
+    x = graph.get_tensor_by_name('prefix/p_x:0')
+    y = graph.get_tensor_by_name('prefix/p_y:0')
     keep_prob = graph.get_tensor_by_name('prefix/keep_prob:0')
     print(x, y, keep_prob)
-
-    # X = tf.placeholder(tf.float32, [None, 60 * 160])
-    # Y = tf.placeholder(tf.float32, [None, 4 * 57])
-    # keep_prob = tf.placeholder(tf.float32)
-
     print('Starting Session, setting the GPU memory usage to %f' % args.gpu_memory)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory)
     sess_config = tf.ConfigProto(gpu_options=gpu_options)
     persistent_sess = tf.Session(graph=graph, config=sess_config)
+
     ##################################################
     # END Tensorflow part
     ##################################################

@@ -10,6 +10,8 @@ from gen_captcha import ALPHABET
 import numpy as np
 import tensorflow as tf
 
+import time
+import logging
 
 text, image = gen_captcha_text_and_image()
 print("验证码图像channel:", image.shape)  # (60, 160, 3)
@@ -126,13 +128,13 @@ def get_next_batch(batch_size=128):
 
 ####################################################################
 
-X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH], name='inputs_placeholder')
-Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])
-keep_prob = tf.placeholder(tf.float32)  # dropout
+X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH], name='p_x')
+Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN], name='p_y')
+keep_prob = tf.placeholder(tf.float32, name='keep_prob')  # dropout
 
 
 # 定义CNN
-def crack_captcha_cnn(p_X, p_Y, keep_prob, w_alpha=0.01, b_alpha=0.1):
+def crack_captcha_cnn(w_alpha=0.01, b_alpha=0.1):
     x = tf.reshape(X, shape=[-1, IMAGE_HEIGHT, IMAGE_WIDTH, 1])
 
     # w_c1_alpha = np.sqrt(2.0/(IMAGE_HEIGHT*IMAGE_WIDTH)) #
@@ -169,18 +171,17 @@ def crack_captcha_cnn(p_X, p_Y, keep_prob, w_alpha=0.01, b_alpha=0.1):
 
     w_out = tf.Variable(w_alpha * tf.random_normal([1024, MAX_CAPTCHA * CHAR_SET_LEN]))
     b_out = tf.Variable(b_alpha * tf.random_normal([MAX_CAPTCHA * CHAR_SET_LEN]))
-    out = tf.add(tf.matmul(dense, w_out), b_out)
+    out = tf.add(tf.matmul(dense, w_out), b_out, name='out_put')
     # out = tf.nn.softmax(out)
     return out
 
 
 # 训练
 def train_crack_captcha_cnn():
-    with tf.Session(graph=tf.Graph()) as sess:
-        X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH], name='inputs_placeholder')
-        Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])
-        keep_prob = tf.placeholder(tf.float32)  # dropout
-        output = crack_captcha_cnn(X, Y, keep_prob)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=.8)
+    sess_config = tf.ConfigProto(gpu_options=gpu_options)
+    with tf.Session(config=sess_config) as sess:
+        output = crack_captcha_cnn()
         # loss
         # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, Y))
         loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, labels=Y))
@@ -194,12 +195,12 @@ def train_crack_captcha_cnn():
         correct_pred = tf.equal(max_idx_p, max_idx_l)
         accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
+        saver = tf.train.Saver()
 
         sess.run(tf.global_variables_initializer())
-        saver = tf.train.Saver(max_to_keep=1)
 
         step = 0
-        while step < 200:
+        while step < 101:
             batch_x, batch_y = get_next_batch(64)
             _, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
             print(step, loss_)
@@ -212,46 +213,22 @@ def train_crack_captcha_cnn():
                 # 如果准确率大于50%,保存模型,完成训练
                 base_dir = os.path.abspath(os.path.dirname(__file__))
                 model_dir = os.path.join(base_dir, "model/model.ckpt")
-                saver.save(sess, model_dir, global_step=step)
-                # if acc > 0.5:
-                #     saver.save(sess, model_dir, global_step=step)
+                if acc > 0.99:
+                    saver.save(sess, model_dir, global_step=step)
+                    break
+                elif acc > 0.5 and acc < 0.99:
+                    saver.save(sess, model_dir, global_step=step)
                 #     break
 
             step += 1
 
 
-def crack_captcha(captcha_image, saver=None):
+def crack_captcha(captcha_image):
     output = crack_captcha_cnn()
-    with tf.Session(graph=tf.Graph()) as sess:
+    saver = tf.train.Saver()
+    with tf.Session() as sess:
         # saver.restore(sess, tf.train.latest_checkpoint('./number/'))
         # saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/model/'))
-        if not saver:
-            saver = tf.train.Saver()
-            saver.restore(sess, "/Users/alpha/github/model/crack_capcha.model-194200")
-        predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
-        text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
-
-        text = text_list[0].tolist()
-        vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
-        i = 0
-        for n in text:
-            vector[i * CHAR_SET_LEN + n] = 1
-            i += 1
-        return vec2text(vector), saver
-
-
-def crack_captcha1(captcha_image):
-    with tf.Session(graph=tf.Graph()) as sess:
-        X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])
-        Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])
-        keep_prob = tf.placeholder(tf.float32)  # dropout
-
-        output = crack_captcha_cnn(X, Y, keep_prob)
-        # tf.reset_default_graph()
-        saver = tf.train.Saver()
-        # saver.restore(sess, tf.train.latest_checkpoint('./number/'))
-        # saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/model/'))
-
         saver.restore(sess, "/Users/alpha/github/model/crack_capcha.model-194200")
         predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
         text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
@@ -263,6 +240,36 @@ def crack_captcha1(captcha_image):
             vector[i * CHAR_SET_LEN + n] = 1
             i += 1
         return vec2text(vector)
+
+
+def predict(captcha_image):
+    from load import load_graph
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--frozen_model_filename", default="results/frozen_model.pb", type=str,
+                        help="Frozen model file to import")
+    parser.add_argument("--gpu_memory", default=.2, type=float, help="GPU memory per process")
+    args = parser.parse_args()
+    graph = load_graph('/Users/alpha/github/flask/flasky/app/cnn/model/frozen_model.pb')
+    x = graph.get_tensor_by_name('prefix/p_x:0')
+    y = graph.get_tensor_by_name('prefix/p_y:0')
+    keep_prob = graph.get_tensor_by_name('prefix/keep_prob:0')
+    print(x, y, keep_prob)
+    print('Starting Session, setting the GPU memory usage to %f' % args.gpu_memory)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory)
+    sess_config = tf.ConfigProto(gpu_options=gpu_options)
+    persistent_sess = tf.Session(graph=graph, config=sess_config)
+    out_put = graph.get_tensor_by_name("prefix/out_put:0")
+    predict = tf.argmax(tf.reshape(out_put, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+    text_list = persistent_sess.run(predict, feed_dict={x: [captcha_image], keep_prob: 1})
+    text = text_list[0].tolist()
+    vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
+    i = 0
+    for n in text:
+        vector[i * CHAR_SET_LEN + n] = 1
+        i += 1
+    return vec2text(vector)
+
 
 
 # if __name__ == '__main__':
@@ -278,21 +285,25 @@ def crack_captcha1(captcha_image):
 #     image = Image.open(captcha_path)
 #     image = np.array(image)
 #     image = convert2gray(image)  # 生成一张新图
-#     image1 = image.flatten() / 255  # 将图片一维化
-#     predict_text= crack_captcha1(image1)  # 导入模型识别
+#     image = image.flatten() / 255  # 将图片一维化
+#     predict_text = predict(image)  # 导入模型识别
 #     print("第一次预测: {}".format(predict_text))
+# #
 #
+#     predict_text = predict(image)  # 导入模型识别
+#     print("第二次预测: {}".format(predict_text))
 #     captcha_path = '/Users/alpha/github/Flask/flasky/app/static/captcha.jpg'
 #     image = Image.open(captcha_path)
 #     image = np.array(image)
 #     image = convert2gray(image)  # 生成一张新图
-#     image2 = image.flatten() / 255  # 将图片一维化
-#     predict_text= crack_captcha1(image2)  # 导入模型识别
-#     print(image1 == image2)
-#     print("第二次预测: {}".format(predict_text))
-
+#     image = image.flatten() / 255  # 将图片一维化
+#     predict_text = crack_captcha(image)  # 导入模型识别
+#     print("预测: {}".format(predict_text))
 # train_crack_captcha_cnn()
 
 if __name__ == '__main__':
     # get_next_batch(64)
+    t1 = time.time()
     train_crack_captcha_cnn()
+    t2 = time.time()
+    logging.warning('finished time {}'.format(t2 - t1))

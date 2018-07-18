@@ -14,7 +14,7 @@
 
 
 print('哈喽...')
-
+   
 
 def test_debug():
     for i in range(10):
@@ -40,13 +40,15 @@ vcode = ('hahha '
 
 print('hahhaha '
       'better')
+print('hahaha \
+beater')
 
 
 class TestProject(object):
     """test pep8"""
 
     def __init__(self, arg):
-        return arg`
+        return arg
 
 
 # http://///////////////////////////////////////////www.baidu.comcccccccccccccccccccccccccccccccccccccccc
@@ -62,5 +64,14 @@ class TestUnit(object):
         pass
 
 
-if __name__ == '__main__':
-    test_debug()
+a = 0.6
+if a > 0.8:
+    print('hahah')
+elif a > 0.5:
+    print('wahaha')
+else:
+    print('cacaca')
+
+
+# if __name__ == '__main__':
+#     test_debug()

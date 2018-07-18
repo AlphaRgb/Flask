@@ -235,6 +235,25 @@ def crack_captcha(captcha_image):
         return vec2text(vector)
 
 
+def crack_captcha1(captcha_image):
+    output = crack_captcha_cnn()
+    saver = tf.train.Saver()
+    with tf.Session() as sess:
+        # saver.restore(sess, tf.train.latest_checkpoint('./number/'))
+        # saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/model/'))
+        saver.restore(sess, "/Users/alpha/github/model/crack_capcha.model-194200")
+        predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+        text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
+
+        text = text_list[0].tolist()
+        vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
+        i = 0
+        for n in text:
+            vector[i * CHAR_SET_LEN + n] = 1
+            i += 1
+        return vec2text(vector)
+
+
 if __name__ == '__main__':
     # text, image = gen_captcha_text_and_image()
     # image = convert2gray(image)  # 生成一张新图
