@@ -220,7 +220,7 @@ def train_crack_captcha_cnn():
             step += 1
 
 
-def crack_captcha_old(captcha_image):
+def crack_captcha(captcha_image):
     with tf.Session() as sess:
         output = crack_captcha_cnn()
         saver = tf.train.Saver(max_to_keep=1)
@@ -239,7 +239,7 @@ def crack_captcha_old(captcha_image):
         return vec2text(vector)
 
 
-def crack_captcha(captcha_image, model_path):
+def crack_captcha1(captcha_image, model_path):
 
     with tf.Session(graph=tf.Graph()) as sess:
         X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])
@@ -312,15 +312,22 @@ if __name__ == '__main__':
     image = convert2gray(image)  # 生成一张新图
     image = image.flatten() / 255  # 将图片一维化
     model_path = '/Users/alpha/github/model/'
-    predict_text = crack_captcha(image, model_path)  # 导入模型识别
+    predict_text = crack_captcha1(image, model_path)  # 导入模型识别
     print("第一次预测: {}".format(predict_text))
 # #
 #
-    predict_text = crack_captcha(image)  # 导入模型识别
+    predict_text = crack_captcha1(image)  # 导入模型识别
     print("第二次预测: {}".format(predict_text))
 
-    predict_text = crack_captcha(image)  # 导入模型识别
+    predict_text = crack_captcha1(image)  # 导入模型识别
     print("第三次预测: {}".format(predict_text))
+#     captcha_path = '/Users/alpha/github/Flask/flasky/app/static/captcha.jpg'
+#     image = Image.open(captcha_path)
+#     image = np.array(image)
+#     image = convert2gray(image)  # 生成一张新图
+#     image = image.flatten() / 255  # 将图片一维化
+#     predict_text = crack_captcha(image)  # 导入模型识别
+#     print("预测: {}".format(predict_text))
 # train_crack_captcha_cnn()
 
 # if __name__ == '__main__':

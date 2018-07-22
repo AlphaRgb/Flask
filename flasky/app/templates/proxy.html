@@ -1,11 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Proxy</title>
-</head>
-<body>
-    <h1>当前代理:</h1>
-    <h3>{{ proxy }}</h3>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}随机代理{% endblock %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h3>当前代理:</h3>
+    <h1>{{ proxy }}</h1>
+</div>
+<div>
+    <button id="testProxy" class="btn btn-primary">测试代理</button>
+    <!-- <a href="https://geoiptool.com/zh/" target="_blank">测试地址</a> -->
+    <div id="result" style="margin-top: 20px;"></div>
+</div>
+<script>
+    $(document).ready(function(){
+      $('#testProxy').click(function(param){
+        $(this).text('测试中...')
+        // axios.get('/proxy/check/' + '{{ proxy }}').then(function(res){console.log(res.data)})
+        // 200.155.126.54:20183 这个代理可用
+        axios.get('/proxy/check/' + '{{ proxy }}').then(
+            function(res){$('#result').html(res.data);$('#testProxy').text('测试完成')}
+            )
+      })
+  });
+</script>
+{% endblock %}

@@ -1,27 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Proxy</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
-</head>
-<body>
-    <h1>模型训练...</h1>
-    <!-- <img src="{{ url_for('static', filename='captcha.jpg') }}" alt=""> -->
+{% extends "base.html" %}
+
+{% block title %}验证码识别{% endblock %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>验证码识别</h1>
+</div>
+<!-- <img src="{{ url_for('static', filename='captcha.jpg') }}" alt=""> -->
+<div class="container" style="margin: 20px 0px 20px 0px">
     <img src="data:image/jpg;base64,{{ base64_data }}"/>
-    <button id="changeImage">换一张</button>
-    <button id="predictValue">预测一下结果</button>
-    预测结果是:<input type="text" id="result">
-    <script>
-        $(document).ready(function(){
-          $('#changeImage').click(function(){
-            axios.get('/cnn/random/').then(function(res){console.log(res.data)})
-            window.location.reload();
-          })
-          $('#predictValue').click(function(){
-            axios.get('/cnn/predict/').then(function(res){console.log(res.data); $('#result').val(res.data)})})
-        });
-    </script>
-</body>
-</html>
+    <button id="changeImage" class="btn btn-default">换一张</button>
+</div>
+<div class="container" style="margin: 20px 0px 20px 0px">
+    
+    <button id="predictValue" class="btn btn-primary">预测一下结果</button>
+</div>
+<div class="container" style="margin: 20px 0px 20px 0px">
+    <span style="display: none;">预测结果是:</span>
+    <!-- <input type="text" id="result" style="margin: 0px 0px 0px 10px; font-size: 24px;"> -->
+    <h3 style="display: inline;"></h3>
+</div>
+<script>
+    $(document).ready(function(){
+      $('#changeImage').click(function(){
+        axios.get('/cnn/random/').then(function(res){console.log(res.data);window.location.reload();})
+      })
+      $('#predictValue').click(function(){
+        axios.get('/cnn/predict/').then(function(res){console.log(res.data); $('span').css('display', 'inline');$('h3').text(res.data)})})
+    });
+</script>
+{% endblock %}
+
+

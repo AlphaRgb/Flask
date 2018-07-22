@@ -4,12 +4,11 @@
 import json, argparse, time
 
 import tensorflow as tf
-from load import load_graph
 
 from flask import Flask, request
 from flask_cors import CORS
 
-from tensorflow_cnn_train import crack_captcha
+from tensorflow_cnn_train6 import crack_captcha1
 
 ##################################################
 # API part
@@ -84,30 +83,43 @@ def predict():
     return json_data
 
 
+# @app.route('/api/test/')
+# def predict_test():
+#     # return '测试cnn'
+#     from PIL import Image
+#     image = Image.open(captcha_path)
+#     image = np.array(image)
+#     image = convert2gray(image)  # 生成一张新图
+#     image = image.flatten() / 255  # 将图片一维化
+#     print('shape:', image.shape)
+#
+#     # predict = tf.argmax(tf.reshape(y, [-1, 4, 57]), 2)
+#     # text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
+#
+#     out_put = graph.get_tensor_by_name("prefix/out_put:0")
+#     predict = tf.argmax(tf.reshape(out_put, [-1, 4, 63]), 2)
+#     text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
+#     text = text_list[0].tolist()
+#     vector = np.zeros(4 * 63)
+#     i = 0
+#     for n in text:
+#         vector[i * 63 + n] = 1
+#         i += 1
+#     print(vec2text(vector))
+#     return vec2text(vector)
+
+
 @app.route('/api/test/')
-def predict_test():
-    # return '测试cnn'
+def api_predict():
     from PIL import Image
+
     image = Image.open(captcha_path)
     image = np.array(image)
     image = convert2gray(image)  # 生成一张新图
     image = image.flatten() / 255  # 将图片一维化
-    print('shape:', image.shape)
+    predict_text = crack_captcha1(image)  # 导入模型识别
+    return predict_text
 
-    # predict = tf.argmax(tf.reshape(y, [-1, 4, 57]), 2)
-    # text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
-
-    out_put = graph.get_tensor_by_name("prefix/out_put:0")
-    predict = tf.argmax(tf.reshape(out_put, [-1, 4, 63]), 2)
-    text_list = persistent_sess.run(predict, feed_dict={x: [image], keep_prob: 1})
-    text = text_list[0].tolist()
-    vector = np.zeros(4 * 63)
-    i = 0
-    for n in text:
-        vector[i * 63 + n] = 1
-        i += 1
-    print(vec2text(vector))
-    return vec2text(vector)
 
 
 

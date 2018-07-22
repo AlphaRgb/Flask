@@ -45,7 +45,7 @@ def getResultForDigit(a):
 
 
 if __name__ == "__main__":
-    result = getResultForDigit('三千五百二十三')
+    result = getResultForDigit('一千九百一十一')
     print(result)
     # test_map = {
     #     '三千五百二十三': 3523,

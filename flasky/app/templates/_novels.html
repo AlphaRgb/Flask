@@ -1,0 +1,7 @@
+<ul class="novels">
+    {% for name, chapter, title, url in novel.chapters %}
+    <li>
+        <a href="{{ chapter }}">{{ title }}</a>
+    </li>
+    {% endfor %}
+</ul>

@@ -64,6 +64,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # freeze_graph(args.model_dir, args.output_node_names)
-    freeze_graph('/Users/alpha/github/flask/flasky/app/cnn/model/', 'p_x,p_y,keep_prob,out_put')
+    freeze_graph('/Users/alpha/github/flask/flasky/app/cnn/model/', 'p_x,p_y,keep_prob,out_put,predictions,predict1,predict2')
     # for n in tf.get_default_graph().as_graph_def().node:
     #     print(n.name)

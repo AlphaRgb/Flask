@@ -134,7 +134,7 @@ keep_prob = tf.placeholder(tf.float32, name='keep_prob')  # dropout
 
 
 # 定义CNN
-def crack_captcha_cnn(X, Y, keep_prob, w_alpha=0.01, b_alpha=0.1):
+def crack_captcha_cnn(w_alpha=0.01, b_alpha=0.1):
     x = tf.reshape(X, shape=[-1, IMAGE_HEIGHT, IMAGE_WIDTH, 1])
 
     # w_c1_alpha = np.sqrt(2.0/(IMAGE_HEIGHT*IMAGE_WIDTH)) #
@@ -190,8 +190,8 @@ def train_crack_captcha_cnn():
         optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
         predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN], name='predictions')
-        max_idx_p = tf.argmax(predict, 2)
-        max_idx_l = tf.argmax(tf.reshape(Y, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+        max_idx_p = tf.argmax(predict, 2, name='predict1')
+        max_idx_l = tf.argmax(tf.reshape(Y, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2, name='predict2')
         correct_pred = tf.equal(max_idx_p, max_idx_l)
         accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
@@ -200,13 +200,13 @@ def train_crack_captcha_cnn():
         sess.run(tf.global_variables_initializer())
 
         step = 0
-        while step < 2001:
+        while step < 51:
             batch_x, batch_y = get_next_batch(64)
             _, loss_ = sess.run([optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
             print(step, loss_)
 
             # 每100 step计算一次准确率
-            if step % 1000 == 0:
+            if step % 50 == 0:
                 batch_x_test, batch_y_test = get_next_batch(100)
                 acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
                 print(step, acc)
@@ -220,41 +220,13 @@ def train_crack_captcha_cnn():
             step += 1
 
 
-def crack_captcha_old(captcha_image):
+def crack_captcha(captcha_image):
+    output = crack_captcha_cnn(X)
+    saver = tf.train.Saver()
     with tf.Session() as sess:
-        output = crack_captcha_cnn()
-        saver = tf.train.Saver(max_to_keep=1)
         # saver.restore(sess, tf.train.latest_checkpoint('./number/'))
-        saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/model/'))
-        # saver.restore(sess, path)
-        predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
-        text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
-
-        text = text_list[0].tolist()
-        vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
-        i = 0
-        for n in text:
-            vector[i * CHAR_SET_LEN + n] = 1
-            i += 1
-        return vec2text(vector)
-
-
-def crack_captcha(captcha_image, model_path):
-
-    with tf.Session(graph=tf.Graph()) as sess:
-        X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])
-        Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])
-        keep_prob = tf.placeholder(tf.float32)  # dropout
-
-        output = crack_captcha_cnn(X, Y, keep_prob)
-        saver = tf.train.Saver(max_to_keep=1)
-        # my_model_path = '/Users/alpha/github/model/'
-        ckpt = tf.train.get_checkpoint_state(model_path)
-        if ckpt and ckpt.model_checkpoint_path:
-            saver.restore(sess, ckpt.model_checkpoint_path)
-        # saver.restore(sess, tf.train.latest_checkpoint('./number/'))
-        # saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/model/'))
-        # saver.restore(sess, path)
+        # saver.restore(sess, tf.train.latest_checkpoint('/Users/alpha/github/Flask/flasky/app/cnn/model/'))
+        saver.restore(sess, "/Users/alpha/github/model/crack_capcha.model-194200")
         predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
         text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
 
@@ -284,13 +256,18 @@ def predict(captcha_image):
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory)
     sess_config = tf.ConfigProto(gpu_options=gpu_options)
     persistent_sess = tf.Session(graph=graph, config=sess_config)
-    out_put = graph.get_tensor_by_name("prefix/out_put:0")
-    predict = tf.argmax(tf.reshape(out_put, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+    predict = graph.get_tensor_by_name('prefix/predict1:0')
+    print('predition:', predict)
+    # out_put = crack_captcha_cnn(x)
+    # predict = tf.argmax(tf.reshape(out_put, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+    # prediction = graph.get_tensor_by_name("prefix/predictions:0")
     text_list = persistent_sess.run(predict, feed_dict={x: [captcha_image], keep_prob: 1})
     text = text_list[0].tolist()
+    print('text:', text)
     vector = np.zeros(MAX_CAPTCHA * CHAR_SET_LEN)
     i = 0
     for n in text:
+        print('n:', n)
         vector[i * CHAR_SET_LEN + n] = 1
         i += 1
     return vec2text(vector)
@@ -302,25 +279,30 @@ if __name__ == '__main__':
     # image = convert2gray(image)  # 生成一张新图
     # image = image.flatten() / 255  # 将图片一维化
     # print(type(image), image)
+    # # predict_text = predict(image)  # 导入模型识别
     # predict_text = crack_captcha(image)  # 导入模型识别
     # print("正确: {}  预测: {}".format(text, predict_text))
     from PIL import Image
-#
+# #
     captcha_path = '/Users/alpha/github/Flask/flasky/app/static/captcha.jpg'
     image = Image.open(captcha_path)
     image = np.array(image)
     image = convert2gray(image)  # 生成一张新图
     image = image.flatten() / 255  # 将图片一维化
-    model_path = '/Users/alpha/github/model/'
-    predict_text = crack_captcha(image, model_path)  # 导入模型识别
+    # predict_text = predict(image)  # 导入模型识别
+    predict_text = crack_captcha(image)  # 导入模型识别
     print("第一次预测: {}".format(predict_text))
+# # #
 # #
-#
-    predict_text = crack_captcha(image)  # 导入模型识别
-    print("第二次预测: {}".format(predict_text))
-
-    predict_text = crack_captcha(image)  # 导入模型识别
-    print("第三次预测: {}".format(predict_text))
+#     predict_text = predict(image)  # 导入模型识别
+#     print("第二次预测: {}".format(predict_text))
+#     captcha_path = '/Users/alpha/github/Flask/flasky/app/static/captcha.jpg'
+#     image = Image.open(captcha_path)
+#     image = np.array(image)
+#     image = convert2gray(image)  # 生成一张新图
+#     image = image.flatten() / 255  # 将图片一维化
+#     predict_text = crack_captcha(image)  # 导入模型识别
+#     print("预测: {}".format(predict_text))
 # train_crack_captcha_cnn()
 
 # if __name__ == '__main__':

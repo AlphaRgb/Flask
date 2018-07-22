@@ -1,0 +1,9 @@
+.card-deck {
+    width: 400px;
+    height: 300px;
+    background: red;
+}
+
+.p-2 {
+    display: flex;
+}

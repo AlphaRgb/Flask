@@ -1,10 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Resume</title>
-</head>
-<body>
-    <h1>王枫的简历...</h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}我的简历{% endblock %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>我的简历</h1>
+</div>
+
+    <div class="wrapper">
+        <div class="sidebar-wrapper">
+            <div class="profile-container">
+                <h1 class="name">王枫</h1>
+                <h3 class="tagline">充满好奇与热情的Python研发工程师</h3>
+            </div><!--//profile-container-->
+            
+            <div class="contact-container container-block">
+                <ul class="list-unstyled contact-list">
+                    <li class="phone"><i class="fas fa-phone"></i><span>17682303763</span></li>
+                    <li class="email"><i class="fas fa-envelope"></i><span>liushahedi@gmail.com</span></li>
+                    <li class="website"><i class="fas fa-globe"></i><a href="https://themes.3rdwavemedia.com/bootstrap-templates/resume/orbit-free-resume-cv-bootstrap-theme-for-developers/" target="_blank">portfoliosite.com</a></li>
+                    <li class="github"><i class="fab fa-github"></i><a href="#" target="_blank">github.com/username</a></li>
+                </ul>
+            </div><!--//contact-container-->
+            <div class="education-container container-block">
+                <h2 class="container-block-title">教育经历</h2>
+                <div class="item">
+                    <h4 class="degree">中国地质大学</h4>
+                    <h5 class="meta">工业设计</h5>
+                    <div class="time">2010 - 2014</div>
+                </div><!--//item-->
+            </div><!--//education-container-->
+            
+            <div class="languages-container container-block">
+                <h2 class="container-block-title">求职意向</h2>
+                <ul class="list-unstyled interests-list">
+                    <li>Python研发工程师<span class="lang-desc"></span></li>
+                    <li>全职<span class="lang-desc"></span></li>
+                    <li>10k-15k <span class="lang-desc"></span></li>
+                    <li>随时可到岗 <span class="lang-desc"></span></li>
+                </ul>
+            </div><!--//interests-->
+            
+            <div class="interests-container container-block">
+                <h2 class="container-block-title">Interests</h2>
+                <ul class="list-unstyled interests-list">
+                    <li>Climbing</li>
+                    <li>Snowboarding</li>
+                    <li>Cooking</li>
+                </ul>
+            </div><!--//interests-->
+            
+        </div><!--//sidebar-wrapper-->
+        
+        <div class="main-wrapper">
+            
+            <section class="section summary-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-user"></i></span>自我描述</h2>
+                <div class="summary">
+                    <p>本人对工作的态度: 第一,要高效完成自己的本职工作;第二,要在完成的基础上寻找完美;第三,要在完美的基础上,与其他同事互相交流学习,互相提升。
+我的优势: 热爱技术、自学能力强,有良好的自我认知,良好的心态与沟通能力以及良好的编程能力和编程习惯。</p>
+                </div><!--//summary-->
+            </section><!--//section-->
+            
+            <section class="section experiences-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-briefcase"></i></span>工作经历</h2>
+                
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="company">杭州有数金融服务有限公司</h3>
+                            <div class="time">2017.03 - 2018.06</div>
+                        </div><!--//upper-row-->
+                        <div class="position">Python研发工程师</div>
+                    </div><!--//meta-->
+                    <div class="details">
+                        <p>1.负责公司司法业务相关数据的采集工作(scrapy+pyspider);</p>  
+                        <p>2.负责公司爬虫平台的前端(vue)页面工作和后端(django)部分功能实现工作;</p>
+                        <p>3.负责为公司其他部门获取实时数据程序提供接口和脚本的工作;</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+                
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="company">浙江碳银互联网科技有限公司</h3>
+                            <div class="time">2014.07 - 2017.02</div>
+                        </div><!--//upper-row-->
+                        <div class="position">产品助理和数据采集员</div>
+                    </div><!--//meta-->
+                    <div class="details">
+                        <p>1.协助产品经理解决日常的产品相关的工作;</p>  
+                        <p>2.由于工作之中有大量的收集环保新闻数据的需求,利用工作之余自学python,利用scrapy爬取了相关网站的相关数据,避免了人为的重复性工作;</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+                                
+            </section><!--//section-->
+            
+            <section class="section projects-section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-archive"></i></span>项目经验</h2>
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="company">司法相关的各网站数据以及其他数据的采集</h3>
+                            <div class="time">2017.03 - 2018.06</div>
+                        </div><!--//upper-row-->
+                        <div class="position">负责数据采集的代码开发工作</div>
+                    </div><!--//meta-->
+                    <div class="details">
+                        <p>1.利用pyspider爬虫框架采集与司法有关的各网站数据,包括裁判文书,执行信息,开庭公告,法院公告等;</p>  
+                        <p>2.将不同网站不同类型的数据根据不同的规则进行解析(xpath),清洗,入库(es)操作;</p>
+                        <p>3.保证各个网站的数据全量爬取正常以及维护各个网站增量数据正常更新;</p>
+                        <p>4.利用scrapy进行一些其他数据的采集;</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+                <div class="item">
+                    <div class="meta">
+                        <div class="upper-row">
+                            <h3 class="company">集成pyspider框架和kafka消息队列的爬虫平台开发</h3>
+                            <div class="time">2017.02 - 2018.04</div>
+                        </div><!--//upper-row-->
+                        <div class="position">负责部分前端页面开发和后端功能代码开发工作</div>
+                    </div><!--//meta-->
+                    <div class="details">
+                        <p>1.该平台集成了pyspider爬虫框架,使用了kafka服务来处理所有爬虫项目的消息队列的产生及消费,从而监控到公司所有爬虫项目的运行状态;</p>  
+                        <p>2.使用了Vue进行爬虫平台的监控功能的前端页面开发,以及与后台数据接口进行数据交互,提供数据展示功能;</p>
+                        <p>3.使用Django进行了后端的部分开发工作;</p>
+                    </div><!--//details-->
+                </div><!--//item-->
+            </section><!--//section-->
+            
+            <section class="skills-section section">
+                <h2 class="section-title"><span class="icon-holder"><i class="fas fa-rocket"></i></span>技能评价</h2>
+                <div class="skillset">        
+                    <div class="item">
+                        <h3 class="level-title">Python</h3>
+                        <div class="progress level-bar">
+                            <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                               
+                    </div><!--//item-->
+
+                    <div class="item">
+                        <h3 class="level-title">Scrapy &amp; Pyspider</h3>
+                        <div class="progress level-bar">
+                            <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                                 
+                    </div><!--//item-->
+
+                    <div class="item">
+                        <h3 class="level-title">Django &amp; Flask</h3>
+                        <div class="progress level-bar">
+                            <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                                 
+                    </div><!--//item-->
+
+                    <div class="item">
+                        <h3 class="level-title">HTML5 &amp; CSS</h3>
+                        <div class="progress level-bar">
+                                <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                                
+                    </div><!--//item-->
+                    
+                    <div class="item">
+                        <h3 class="level-title">Javascript &amp; jQuery</h3>
+                        <div class="progress level-bar">
+                            <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                              
+                    </div><!--//item-->
+                    
+                    <div class="item">
+                        <h3 class="level-title">Vue</h3>
+                        <div class="progress level-bar">
+                            <div class="progress-bar theme-progress-bar" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>                                 
+                    </div><!--//item-->
+                    
+                                        
+                    
+                    
+                </div>  
+            </section><!--//skills-section-->
+            
+        </div><!--//main-body-->
+    </div>
+{% endblock %}
+
