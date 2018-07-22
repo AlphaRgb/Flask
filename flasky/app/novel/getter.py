@@ -42,7 +42,7 @@ def get_chapter_content(url):
     res = requests.get(url, verify=False)
     html = etree.HTML(res.text)
     # content = ''.join(html.xpath('//div[@id="content"]//text()')[:-3])
-    content = '<br><br>'.join(html.xpath('//div[@id="content"]//text()'))
+    content = '<br>'.join(html.xpath('//div[@id="content"]//text()'))
     index = content.find('Ps')
     if index:
         content = content[:index]
