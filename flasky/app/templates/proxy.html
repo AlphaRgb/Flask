@@ -10,17 +10,34 @@
 </div>
 <div>
     <button id="testProxy" class="btn btn-primary">测试代理</button>
+    <button id="allProxy" class="btn btn-primary">获得所有代理</button>
     <!-- <a href="https://geoiptool.com/zh/" target="_blank">测试地址</a> -->
     <div id="result" style="margin-top: 20px;"></div>
 </div>
 <script>
     $(document).ready(function(){
       $('#testProxy').click(function(param){
+        $('#result').html('');
         $(this).text('测试中...')
         // axios.get('/proxy/check/' + '{{ proxy }}').then(function(res){console.log(res.data)})
         // 200.155.126.54:20183 这个代理可用
         axios.get('/proxy/check/' + '{{ proxy }}').then(
             function(res){$('#result').html(res.data);$('#testProxy').text('测试完成')}
+            )
+      });
+      $('#allProxy').click(function(param){
+        $('#result').html('');
+        // axios.get('/proxy/check/' + '{{ proxy }}').then(function(res){console.log(res.data)})
+        // 200.155.126.54:20183 这个代理可用
+        axios.get('/proxy/get_all/').then(
+            function(res){
+                datas = res.data;
+                var result = '<h4>共获得' + +datas.length + '个代理</h4>'
+                for (var i = datas.length - 1; i >= 0; i--) {
+                    console.log(datas[i])
+                    result += datas[i]+'<br>'
+                }
+                $('#result').html(result);}
             )
       })
   });

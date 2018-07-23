@@ -15,12 +15,12 @@ api_list = {
 }
 
 
+# @proxy.route('/proxy/')
+# def index():
+#     return jsonify(api_list)
+
+
 @proxy.route('/proxy/')
-def index():
-    return jsonify(api_list)
-
-
-@proxy.route('/proxy/get/')
 def get():
     proxy = ProxyManager().get()
     if proxy:

@@ -7,4 +7,40 @@
 <div class="page-header">
     <h1>欢迎来到小站</h1>
 </div>
+<section class="section projects-section">
+    <h2 class="section-title" style="font-size: 20px;"><span class="icon-holder"><i class="fas fa-cube"></i></span>  类目说明</h2>
+    <!--<div class="intro">-->
+        <!--<p></p>-->
+    <!--</div>&lt;!&ndash;//intro&ndash;&gt;-->
+    <div class="item">
+        <span class="project-title" style="font-size: 16px"><a href="resume/">简历</a></span><p class="project-tagline">用来找工作的.</p>
+    </div><!--//item-->
+    <hr>
+    <div class="item">
+        <span class="project-title" style="font-size: 16px"><a href="novels/" target="_blank">实时小说</a></span>
+        <p class="project-tagline">需求来源: 自己平时追一些小说,不过最新的章节一般都需要收费,免费的又广告太多,于是想做一个接口,提供某篇小说最新更新的章节内容. </p>
+        <p class="project-tagline">功能介绍: 搜索一篇小说名,理想情况下会返回该小说最新更新的10篇小说章节. </p>
+        <p class="project-tagline">尚存问题:
+            <ul>
+                <li style="list-style-type:none;"> 1.只针对了部分格式的内容进行了解析.</li>
+                <li style="list-style-type:none;"> 2.搜索的所有结果都是通过网络请求返回的,是单线程程序,响应时间过长.</li>
+                <li style="list-style-type:none;"> 3.可能会有一些向未发现的bug存在.</li>
+            </ul>
+        </p>
+        <p class="project-tagline">后期规划:
+            <ul>
+                <li style="list-style-type:none;"> 1.先把尚存问题中能解决的先解决.</li>
+                <li style="list-style-type:none;"> 2.把后台的所有小说的章节更新单独做一个定时程序.然后把前台的数据已有小说的返回都直接从数据库里取,没有的从网络请求中获取,不过要做成协程.</li>
+            </ul>
+        </p>
+    </div><!--//item-->
+    <hr>
+    <div class="item">
+        <span class="project-title"><a href="proxy/" target="_blank">随机代理</a></span><p class="project-tagline">通过爬虫爬取网络上的一些免费匿名代理来维护一个自己的代理池,可随机取一个代理或者取出所有的代理<span style="color: #999;">(免费的代理的实用性不是很高)</span>.</p>
+    </div><!--//item-->
+    <hr>
+    <div class="item">
+        <span class="project-title"><a href="cnn/" target="_blank">验证码识别</a></span><p class="project-tagline">通过TensorFlow对特定格式的验证码进行训练,然后通过模型可以对该格式的验证码进行预测结果,该模型共训练了19w+的样本量,预测准确率达到了99%.</p>
+    </div><!--//item-->
+</section>     
 {% endblock %}
