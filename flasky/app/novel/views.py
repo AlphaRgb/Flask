@@ -14,36 +14,41 @@ from .forms import SearchForm
 @novel.route('/novels/<name>/')
 def novel_index(name):
     """获取对应小说的最新章节"""
-    novel_url = get_novel(name)
-    name, author = get_novel_info(novel_url)
     novel = Novel.query.filter_by(name=name).first()
-    if not novel:
-        logging.info('添加文章')
+    if novel:
+        chapters = Chapter.query.filter(Chapter.novel_id == novel.id).order_by(Chapter.chapter.desc()).all()
+        all_chapters = []
+        for chapter in chapters:
+            title, chapter, content = chapter.title, chapter.chapter, chapter.content
+            all_chapters.append((name, chapter, title))
+    else:
+        logging.info('添加小说')
+        novel_url = get_novel(name)
+        name, author = get_novel_info(novel_url)
         novel = Novel(name=name, author=author)
         db.session.add(novel)
-    print(novel.id)
-    chapters = get_novel_chapters(novel_url)
-    all_chapters = []
-    for _ in chapters:
-        title, chapter_url = _
-        try:
-            chapter = re.findall(r'\d{1,}', title)[0] if re.findall(r'\d{1,}', title) else getResultForDigit(title.split()[0].replace('第', '').replace('章', ''))
-        except Exception as e:
-            logging.info(e)
-        else:
-            all_chapters.append((name, chapter, title, chapter_url))
-            logging.info(chapter, title, chapter_url)
-            # novel = Novel.query.filter(Novel.name.contains(name)).first()
-            # novel = Novel.query.filter(Novel.name==name).first()
-            logging.warning(novel.id)
-            new_chapter = Chapter.query.filter(Chapter.chapter==chapter, Chapter.novel_id==novel.id).first()
-            logging.warning(new_chapter)
-            # logging.info('chapter:', new_chapter)
-            if not new_chapter:
-                logging.warning('添加章节')
-                content = get_chapter_content(chapter_url).strip()
-                new_chapter = Chapter(title=title, chapter=chapter, content=content, novel_id=novel.id)
-                db.session.add(new_chapter)
+        chapters = get_novel_chapters(novel_url)
+        all_chapters = []
+        for _ in chapters:
+            title, chapter_url = _
+            try:
+                chapter = re.findall(r'\d{1,}', title)[0] if re.findall(r'\d{1,}', title) else getResultForDigit(title.split()[0].replace('第', '').replace('章', ''))
+            except Exception as e:
+                logging.info(e)
+            else:
+                all_chapters.append((name, chapter, title))
+                logging.info(chapter, title, chapter_url)
+                # novel = Novel.query.filter(Novel.name.contains(name)).first()
+                # novel = Novel.query.filter(Novel.name==name).first()
+                logging.info(novel.id)
+                new_chapter = Chapter.query.filter(Chapter.chapter==chapter, Chapter.novel_id==novel.id).first()
+                logging.info(new_chapter)
+                # logging.info('chapter:', new_chapter)
+                if not new_chapter:
+                    logging.info('添加章节')
+                    content = get_chapter_content(chapter_url).strip()
+                    new_chapter = Chapter(title=title, chapter=chapter, content=content, novel_id=novel.id)
+                    db.session.add(new_chapter)
     novel = {
         'title': name,
         'chapters': all_chapters

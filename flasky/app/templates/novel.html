@@ -8,13 +8,13 @@
     <h1>最新章节</h1>
 </div>
 <!-- <ul>
-    {% for name, chapter, title, url in novel.chapters %}
+    {% for name, chapter, title in novel.chapters %}
     <li>
         <a href="{{ chapter }}">{{ title }}</a>
     </li>
     {% endfor %}
 </ul> -->
-{% for name, chapter, title, url in novel.chapters %}
+{% for name, chapter, title in novel.chapters %}
 <div class="col-md-3 col-sm-4 col-xs-6">
  <a href="{{ chapter }}" class="thumbnail purple">{{ title }}</a>
 </div> 
