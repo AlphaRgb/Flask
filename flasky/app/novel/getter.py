@@ -81,7 +81,8 @@ if __name__ == '__main__':
     for _ in chapters:
         title, chapter_url = _
         try:
-            chapter = re.findall(r'\d{1,}', title)[0] if re.findall(r'\d{1,}', title) else getResultForDigit(title.split()[0].replace('第', '').replace('章', ''))
+            end = title.find('章')
+            chapter = re.findall(r'\d{1,}', title)[0] if re.findall(r'\d{1,}', title) else getResultForDigit(''.join(title[1:end]))
         except Exception as e:
             print(e)
         else:
