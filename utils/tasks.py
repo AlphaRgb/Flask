@@ -4,17 +4,70 @@
 # @Date:   2018-08-03 10:01:36
 # @Email: liushahedi@gmail.com
 # @Last Modified by:   AlphaFF
-# @Last Modified time: 2018-08-03 11:41:06
+# @Last Modified time: 2018-08-03 21:47:32
 
 
 import logging
 from flask import Flask, g, request, current_app, template_rendered, render_template
 import pymysql
+from flask_mail import Mail, Message
+from celery import Celery
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+app.config.update(dict(
+    SECRET_KEY='hard to guess string',
+    DEBUG=True,
+    MAIL_SERVER='smtp.163.com',
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME='liushahedi@163.com',
+    MAIL_PASSWORD='31415926fw',
+    MAIL_DEFAULT_SENDER='JamesBy <liushahedi@163.com>',
+    CELERY_BROKER_URL='redis://localhost:6379/0',
+    CELERY_RESULT_BACKEND='redis://localhost:6379/1',
+    CELERY_TASK_SERIALIZER='pickle',
+    CELERY_ACCEPT_CONTENT=['pickle']
+))
+
+mail = Mail(app)
+
+
+def make_celery(app):
+    celery = Celery(app.import_name, backend=app.config['CELERY_RESULT_BACKEND'],
+                    broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
+
+
+# celery部分
+# celery = make_celery(app)
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+
+@celery.task
+def send_async_email(msg):
+    with app.app_context():
+        logger.info('send email...')
+        mail.send(msg)
+
+
+@celery.task
+def test_celery():
+    logger.warning('test celery once..')
 
 
 def get_db():
@@ -64,6 +117,11 @@ def teardown_request(exception):
 @app.route('/')
 def index():
     logger.info('current app name %s', current_app.name)
+    msg = Message('Hello Celery!', recipients=['804950408@qq.com'])
+    msg.body = 'test celery...'
+    # mail.send(msg)
+    send_async_email.delay(msg)
+    # test_celery.delay()
     return 'Hello, %s' % g.name
 
 
@@ -89,3 +147,4 @@ def teardown_db(exception):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
