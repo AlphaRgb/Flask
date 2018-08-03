@@ -8,5 +8,5 @@ url = 'https://geoiptool.com/zh/'
 res = requests.get(url, verify=False).text
 
 html_data = etree.HTML(res)
-result = html_data.xpath('//div[contains(@class, "sidebar-data")]')[0]
+
 print(etree.tounicode(result))
