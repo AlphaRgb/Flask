@@ -63,7 +63,6 @@ class ProxyGetter(object):
     #         except Exception as e:
     #             print(e)
 
-
     # # 爬取西刺代理
     # def crawl_xici(self, page_count=10):
     #     start_url = 'http://www.xicidaili.com/nn/{}'
