@@ -4,7 +4,7 @@
 # @Date:   2018-11-09 13:50:45
 # @Email: liushahedi@gmail.com
 # @Last Modified by:   AlphaFF
-# @Last Modified time: 2018-11-09 17:38:50
+# @Last Modified time: 2019-04-19 17:07:43
 
 
 class Building:
@@ -58,7 +58,25 @@ def construct_building(cls):
     return building
 
 
+# class Building:
+#     def __init__(self, name):
+#         self.name = name
+#         self.floor = None
+#         self.size = None
+
+
+# class BuildingBuilder:
+#     def __init__(self, building):
+#         self.building = Building('House')
+
+#     def build_floor(self):
+#         self.building.floor = 'One'
+
+#     def build_size(self):
+#         self.building.size = 'big'
+
 if __name__ == '__main__':
+    b = Building()
     house = House()
     print(house)
     flat = Flat()
